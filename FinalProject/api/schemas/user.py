@@ -8,7 +8,7 @@ class UserBase(BaseModel):
 
 # Schema for creating a user (includes user_id)
 class UserCreate(UserBase):
-    user_id: int
+    pass
 
 # Schema for updating a user (optional fields)
 class UserUpdate(BaseModel):

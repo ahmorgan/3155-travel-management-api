@@ -1,4 +1,6 @@
-from sqlalchemy import Column, Integer, String, DECIMAL
+from sqlalchemy import Column, Integer, String, DECIMAL, ForeignKey
+from sqlalchemy.orm import relationship
+
 from ..dependencies.database import Base
 
 
@@ -17,6 +19,5 @@ class Trip(Base):
     mode_of_travel = Column(String(50))
     start_date = Column(String(50))
     end_date = Column(String(50))
-
-
-
+    # Relationship to connect with UserTripLink table
+    user_links = relationship("UserTripLink", back_populates="trip")

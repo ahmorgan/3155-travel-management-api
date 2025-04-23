@@ -6,7 +6,6 @@ from sqlalchemy.exc import SQLAlchemyError
 
 def create(db: Session, request):
     new_item = model.User(
-        user_id=request.user_id,
         username=request.username,
         password=request.password
     )

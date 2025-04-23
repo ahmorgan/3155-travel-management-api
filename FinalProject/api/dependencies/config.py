@@ -3,6 +3,6 @@ class conf:
     db_name = "travelmanagementdb"
     db_port = 3306
     db_user = "root"
-    db_password = "Xmountaindew123!!!"
+    db_password = "_"
     app_host = "localhost"
     app_port = 8000

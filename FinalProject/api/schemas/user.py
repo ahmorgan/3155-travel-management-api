@@ -18,7 +18,6 @@ class UserUpdate(BaseModel):
 # Schema that includes the response model for user
 class User(UserBase):
     user_id: int
-    trip_links: list
 
     class Config:
         orm_mode = True

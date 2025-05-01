@@ -1,16 +1,16 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status, Response, Depends
 from ..models import user as model
+from ..models import user_trip_link
 from sqlalchemy.exc import SQLAlchemyError
 
 
 def create(db: Session, request):
     new_item = model.User(
-        user_id=request.user_id,
-        username=request.username,
-        password=request.password
+        user_id=request["user_id"],
+        username=request["username"],
+        password=request["password"]
     )
-
     try:
         db.add(new_item)
         db.commit()

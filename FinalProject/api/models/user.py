@@ -10,3 +10,8 @@ class User(Base):
     password = Column(String(50)) # Password
     # Relationship to connect with UserTripLink table
     trip_links = relationship("UserTripLink", back_populates="user")
+
+    # Code reference: https://stackoverflow.com/questions/5022066/how-to-serialize-sqlalchemy-result-to-json
+    # This code converts SQLAlchemy objects to dictionaries, which makes them easily readable in the recommendation endpoint.
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}

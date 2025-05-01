@@ -1,15 +1,16 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status, Response
 from ..models import user_trip_link as model
+from ..models import user
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 
 
 def create(db: Session, request):
     new_link = model.UserTripLink(
-        user_id=request.user_id,
-        trip_id=request.trip_id,
-        date_booked=request.date_booked if hasattr(request, "date_booked") else datetime.utcnow()
+        user_id=request["user_id"],
+        trip_id=request["trip_id"],
+        date_booked=request["date_booked"] if hasattr(request, "date_booked") else datetime.utcnow()
     )
 
     try:
@@ -40,6 +41,15 @@ def read_one(db: Session, link_id: int):
     except SQLAlchemyError as e:
         error = str(e.__dict__['orig'])
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error)
+
+
+def read_all_user_trip_links(db: Session, user_id: int):
+    try:
+        result = db.query(model.UserTripLink).join(user.User).filter(model.UserTripLink.user_id == user_id).all()
+    except SQLAlchemyError as e:
+        error = str(e.__dict__['orig'])
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error)
+    return result
 
 
 def update(db: Session, link_id: int, request):

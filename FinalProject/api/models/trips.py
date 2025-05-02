@@ -22,3 +22,4 @@ class Trip(Base):
     
     # Relationship to connect with UserTripLink table
     user_links = relationship("UserTripLink", back_populates="trip")
+    reviews = relationship("Review", back_populates="trip")

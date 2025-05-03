@@ -8,8 +8,9 @@ from .dependencies.database import get_db
 from sqlalchemy.orm import Session
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+from .schemas.booking import BookingCreate, BookingBase
 
-from .controllers import trips, user_trip_link
+from .controllers import trips, user_trip_link, booking
 
 app = FastAPI()
 
@@ -79,6 +80,7 @@ def find_recommendation(trip_history, trip_vector_db, all_categories, all_locati
 # and every vector in the trip vector database to find the most similar trip available
 @app.get("/recommendation/{user_id}", tags=["Trip Recommendation"])
 def recommend_trip(user_id: int, db: Session = Depends(get_db)):
+    # References: ChatGPT/documentation for help with FastAPI/SQLAlchemy
     all_categories = trips.read_all_trip_categories(db)
 
     all_locations = trips.read_all_trip_locations(db)
@@ -97,6 +99,27 @@ def recommend_trip(user_id: int, db: Session = Depends(get_db)):
     recommendation_trip_id = find_recommendation(trip_history, trip_vector_db, all_categories, all_locations)
     recommendation = trips.read_one(db, item_id=recommendation_trip_id).as_dict()
     return recommendation
+
+
+# Create endpoint for bookings; only lets the user specify certain values and excludes
+# setting values that can be queried (ie, only the trip id is set, and the trip cost and other
+# values are retrieved). There is also data validation, see airline checking below.
+@app.post("/bookings/", response_model=BookingBase, tags=["Trip Planning"])
+async def create_booking(request: BookingCreate, db: Session = Depends(get_db)):
+    request = request.model_dump()
+    if request["associated_trip_id"] <= 0:
+        raise HTTPException(status_code=404, detail="Trip id not found!")
+    trip = trips.read_one(db, request["associated_trip_id"]).as_dict()
+    total_cost = trip["estimated_cost"]
+    departure_date = trip["start_date"]
+    destination = trip["country"]
+    if request["airline"].lower() not in ["american airlines", "delta airlines", "united airlines", "emirates"]:
+        raise HTTPException(status_code=404, detail="Airline not found/available!")
+    request["departure_date"] = departure_date
+    request["total_cost"] = total_cost
+    request["destination"] = destination
+    new_booking = booking.create(db, request)
+    return new_booking
 
 
 if __name__ == "__main__":

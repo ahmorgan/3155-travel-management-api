@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from .schemas.booking import BookingCreate, BookingBase
+from typing import Union
 
 from .controllers import trips, user_trip_link, booking
 
@@ -105,9 +106,11 @@ def recommend_trip(user_id: int, db: Session = Depends(get_db)):
 # setting values that can be queried (ie, only the trip id is set, and the trip cost and other
 # values are retrieved). There is also data validation, see airline checking below.
 @app.post("/bookings/", response_model=BookingBase, tags=["Trip Planning"])
-async def create_booking(request: BookingCreate, db: Session = Depends(get_db)):
-    request = request.model_dump()
-    if request["associated_trip_id"] <= 0:
+def create_booking(request: Union[BookingCreate, dict], db: Session = Depends(get_db)):
+    request_dump = request
+    if type(request) != dict:
+        request_dump = request.model_dump()
+    if request_dump["associated_trip_id"] <= 0:
         raise HTTPException(status_code=404, detail="Trip id not found!")
     trip = trips.read_one(db, request["associated_trip_id"]).as_dict()
     total_cost = trip["estimated_cost"]
@@ -115,11 +118,14 @@ async def create_booking(request: BookingCreate, db: Session = Depends(get_db)):
     destination = trip["country"]
     if request["airline"].lower() not in ["american airlines", "delta airlines", "united airlines", "emirates"]:
         raise HTTPException(status_code=404, detail="Airline not found/available!")
-    request["departure_date"] = departure_date
-    request["total_cost"] = total_cost
-    request["destination"] = destination
-    new_booking = booking.create(db, request)
-    return new_booking
+    request_dump["departure_date"] = departure_date
+    request_dump["total_cost"] = total_cost
+    request_dump["destination"] = destination
+    if type(request) != dict:
+        new_booking = booking.create(db, request_dump)
+        return new_booking
+    else:  # if the request is a dict, then we testing the function
+        return request_dump
 
 
 if __name__ == "__main__":

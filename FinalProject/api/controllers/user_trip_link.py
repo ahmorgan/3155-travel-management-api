@@ -7,6 +7,7 @@ from datetime import datetime
 
 
 def create(db: Session, request):
+    request = request.model_dump()
     new_link = model.UserTripLink(
         user_id=request["user_id"],
         trip_id=request["trip_id"],

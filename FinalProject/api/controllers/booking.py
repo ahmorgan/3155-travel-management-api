@@ -6,6 +6,8 @@ from sqlalchemy.exc import SQLAlchemyError
 
 
 def create(db: Session, request):
+    if type(request) != dict:
+        request = request.model_dump()
     new_item = model.Booking(
         user_id=request["user_id"],
         destination=request["destination"],

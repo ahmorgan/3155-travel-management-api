@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, VARCHAR, DECIMAL, ForeignKey
 from sqlalchemy.orm import relationship
+import random
 
 from ..dependencies.database import Base
 
@@ -11,9 +12,9 @@ class Trip(Base):
     location = Column(VARCHAR(200))
     country = Column(VARCHAR(200))
     category = Column(VARCHAR(200))
-    visitors = Column(Integer)
-    rating = Column(DECIMAL)
-    revenue = Column(DECIMAL)
+    visitors = Column(Integer, default=random.randint(50, 10000))
+    rating = Column(DECIMAL, default=random.random()*5)
+    revenue = Column(DECIMAL, default=random.random()*10000)
     accomodation_available = Column(VARCHAR(10))
     estimated_cost = Column(Integer)
     mode_of_travel = Column(VARCHAR(50))

@@ -5,8 +5,8 @@ from sqlalchemy.exc import SQLAlchemyError
 
 
 def create(db: Session, request):
+    request = request.model_dump()
     new_item = model.Trip(
-        trip_id=request["trip_id"],
         location=request["location"],
         country=request["country"],
         category=request["category"],
@@ -68,7 +68,7 @@ def read_one(db: Session, item_id):
 
 def update(db: Session, item_id, request):
     try:
-        item = db.query(model.Trip).filter(model.Trip.id == item_id)
+        item = db.query(model.Trip).filter(model.Trip.trip_id == item_id)
         if not item.first():
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Id not found!")
         update_data = request.dict(exclude_unset=True)
@@ -82,7 +82,7 @@ def update(db: Session, item_id, request):
 
 def delete(db: Session, item_id):
     try:
-        item = db.query(model.Trip).filter(model.Trip.id == item_id)
+        item = db.query(model.Trip).filter(model.Trip.trip_id == item_id)
         if not item.first():
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Id not found!")
         item.delete(synchronize_session=False)

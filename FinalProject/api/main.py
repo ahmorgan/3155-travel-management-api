@@ -2,6 +2,7 @@ import uvicorn
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from .routers import index as indexRoute
+from .routers import trip_planner
 from .models import model_loader, trips
 from .dependencies.config import conf
 from .dependencies.database import get_db

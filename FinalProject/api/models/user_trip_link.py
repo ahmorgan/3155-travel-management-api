@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from ..dependencies.database import Base
 
+
 class UserTripLink(Base):
     __tablename__ = 'user_trip_link'
     # Link ID
@@ -16,3 +17,8 @@ class UserTripLink(Base):
     # Relationship to connect with user and trip tables
     user = relationship("User", back_populates="trip_links")
     trip = relationship("Trip", back_populates="user_links")
+
+    # Code reference: https://stackoverflow.com/questions/5022066/how-to-serialize-sqlalchemy-result-to-json
+    # This code converts SQLAlchemy objects to dictionaries, which makes them easily readable in the recommendation endpoint.
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}

@@ -25,9 +25,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-model_loader.index()
+app.include_router(trip_planner.router)
 indexRoute.load_routes(app)
 
+model_loader.index()
 
 # Each trip is assigned two one-hot encoded vectors for trip location and category
 # The index of the 1 in each array indicates the index for that trip location or category

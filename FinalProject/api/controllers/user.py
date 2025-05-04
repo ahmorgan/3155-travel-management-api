@@ -8,7 +8,6 @@ from sqlalchemy.exc import SQLAlchemyError
 def create(db: Session, request):
     request = request.model_dump()
     new_item = model.User(
-        user_id=request["user_id"],
         username=request["username"],
         password=request["password"]
     )

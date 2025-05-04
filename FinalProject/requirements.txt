@@ -6,3 +6,5 @@ pytest
 pytest-mock
 httpx
 cryptography
+scikit-learn
+numpy

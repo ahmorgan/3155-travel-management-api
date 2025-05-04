@@ -10,3 +10,4 @@ class User(Base):
     password = Column(String(50)) # Password
     # Relationship to connect with UserTripLink table
     trip_links = relationship("UserTripLink", back_populates="user")
+    reviews = relationship("Review", back_populates="user")
